@@ -325,7 +325,7 @@ static void print_help(void)
 "Usage: dovecot-lda [-c <config file>] [-d <username>] [-p <path>]\n"
 "                   [-m <mailbox>] [-e] [-k] [-f <envelope sender>]\n"
 "                   [-a <original envelope recipient>]\n"
-"                   [-r <final envelope recipient>] \n");
+"                   [-r <final envelope recipient>] [-t <received date>]\n");
 }
 
 int main(int argc, char *argv[])
@@ -371,12 +371,13 @@ int main(int argc, char *argv[])
 		MASTER_SERVICE_FLAG_STANDALONE |
 		MASTER_SERVICE_FLAG_DONT_LOG_TO_STDERR |
 		MASTER_SERVICE_FLAG_NO_INIT_DATASTACK_FRAME,
-		&argc, &argv, "a:d:ef:m:p:r:");
+		&argc, &argv, "a:d:ef:m:p:r:t:");
 
 	i_zero(&ctx);
 	ctx.session = mail_deliver_session_init();
 	ctx.pool = ctx.session->pool;
 	ctx.rcpt_default_mailbox = "INBOX";
+	ctx.received_date = 0;
 	path = NULL;
 
 	user = getenv("USER");
@@ -440,6 +441,13 @@ int main(int argc, char *argv[])
 			    &final_rcpt_to, &errstr) < 0) {
 				i_fatal_status(EX_USAGE,
 					"Invalid -r parameter: %s", errstr);
+			}
+			break;
+                case 't':
+			/* forced received date */
+			if (sscanf(optarg, "%"PRIdTIME_T, &(ctx.received_date)) <= 0) {
+				i_fatal_status(EX_USAGE,
+					       "Invalid -t parameter: %s", optarg);
 			}
 			break;
 		default:

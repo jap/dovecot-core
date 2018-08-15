@@ -29,6 +29,9 @@ struct mail_deliver_context {
 	unsigned int session_time_msecs;
 	struct timeval delivery_time_started;
 
+	/* received date to set on the message (uses now if NULL) */
+	time_t received_date;
+
 	struct mail_duplicate_db *dup_db;
 
 	/* Session ID, used as log line prefix if non-NULL. */

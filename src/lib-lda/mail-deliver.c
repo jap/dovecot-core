@@ -370,6 +370,8 @@ int mail_deliver_save(struct mail_deliver_context *ctx, const char *mailbox,
 			smtp_address_encode(ctx->mail_from));
 	}
 	mailbox_save_set_flags(save_ctx, flags, kw);
+	if (ctx->received_date != 0)
+		mailbox_save_set_received_date(save_ctx, ctx->received_date, 0);
 
 	headers_ctx = mailbox_header_lookup_init(box, lda_log_wanted_headers);
 	dest_mail = mailbox_save_get_dest_mail(save_ctx);
